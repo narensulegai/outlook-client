@@ -1,24 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Main from './components/main';
+import BoxLoginCallback from './components/boxLoginCallback';
+import BoxLogin from './components/boxLogin';
+import OutlookLogin from './components/outlookLogin';
 
 function App() {
+
+  //Check if it is a redirect form Box login
+  let params = (new URL(document.location)).searchParams;
+  let path = "";
+  if (params.get('code')) {
+    path = 'boxLoginCallback';
+  }
+
+  const pages = {
+    "": <Main/>,
+    "boxLoginCallback": <BoxLoginCallback/>
+  };
+  console.log('App');
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <OutlookLogin/>
+      <BoxLogin/>
+      {pages[path]}
     </div>
   );
 }
