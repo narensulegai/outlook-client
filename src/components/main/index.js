@@ -4,7 +4,7 @@ import toCsv from '../../lib/toCsv'
 
 import CurrentUserContext from '../../context/CurrentUserContext';
 
-function Main(props) {
+function Main() {
   const [emailList, setEmailList] = useState([]);
   const [nextPageLink, setNextPageLink] = useState(null);
 
@@ -34,7 +34,7 @@ function Main(props) {
       return [senderName, senderEmail, e.subject, e.body.content];
     });
     list.unshift(['Sender Name', 'Sender Email', 'Subject', 'Content']);
-    toCsv('eamisl', list);
+    toCsv('email', list);
   };
 
   return <div>

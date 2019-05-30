@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {login, logout, getCurrentUser} from "../../lib/outlookApi";
 
 function OutlookLogin(props) {

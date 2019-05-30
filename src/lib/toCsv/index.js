@@ -6,7 +6,6 @@ export default (filename, rows) => {
       if (row[j] instanceof Date) {
         innerValue = row[j].toLocaleString();
       }
-      ;
       let result = innerValue.replace(/"/g, '""');
       if (result.search(/("|,|\n)/g) >= 0)
         result = '"' + result + '"';

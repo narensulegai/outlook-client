@@ -51,9 +51,10 @@ const callApi = async (url, addHeaders = {}) => {
 
 // https://graph.microsoft.com/v1.0/me/messages?$search="from:shilpa_goswami@mckinsey.com"&$select=subject,from
 // https://graph.microsoft.com/v1.0/me/messages?$filter=from/emailAddress/address eq 'Shilpa_Goswami@mckinsey.com'
+
 const emailEndPoint = 'https://graph.microsoft.com/v1.0/me/messages?'
   + toUrl({
-    '$search': '"from:shilpa_goswami@mckinsey.com"',
+    '$search': `"recipients:updateideabank"`,
     '$select': 'sender,subject,body',
     '$top': 50,
     '$count': 'true'
