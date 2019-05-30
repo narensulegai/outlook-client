@@ -43,7 +43,7 @@ function Main() {
       Welcome {currentUser.name}
       <div>
         <button onClick={getMails}>
-          Get emails
+          Get emails from UpdateIdeaBank mailing group
         </button>
         {nextPageLink && <button onClick={nextPage}>Get more</button>}
         {emailList.length > 0 && <button onClick={download}>Download as CSV</button>}
@@ -52,7 +52,6 @@ function Main() {
         {emailList.map((m, i) => {
           return <div key={i}>
             <div><b>{m.subject}</b></div>
-            {/*<div>{m.body.content}</div>*/}
           </div>;
         })}
       </div>
