@@ -1,15 +1,15 @@
-import React, {useState, useEffect} from 'react';
-import {login, logout, getEmails, getCurrentUser} from "../../lib/outlookApi";
+import React, {useState, useEffect, useContext} from 'react';
+import {getEmails} from "../../lib/outlookApi";
+import CurrentUserContext from '../../context/CurrentUserContext';
 
 function Main(props) {
-  const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const [emailList, setEmailList] = useState([]);
 
 
   useEffect(() => {
-    setCurrentUser(getCurrentUser())
   }, []);
 
+  const currentUser = useContext(CurrentUserContext);
 
   const getMails = async () => {
     const {emails} = await getEmails();
@@ -19,6 +19,7 @@ function Main(props) {
   return <div>
 
     {currentUser !== null && <div>
+      Welcome {currentUser.name}
       <div>
         <button onClick={getMails}>
           Get mails

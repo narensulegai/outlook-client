@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import Main from './components/main';
 import BoxLoginCallback from './components/boxLoginCallback';
 import BoxLogin from './components/boxLogin';
 import OutlookLogin from './components/outlookLogin';
+import {getCurrentUser} from "./lib/outlookApi";
+import CurrentUserContext from './context/CurrentUserContext';
 
 function App() {
-
+  const [currentOutlookUser, setCurrentOutlookUser] = useState('Default user');
   //Check if it is a redirect form Box login
   let params = (new URL(document.location)).searchParams;
   let path = "";
@@ -18,13 +20,18 @@ function App() {
     "": <Main/>,
     "boxLoginCallback": <BoxLoginCallback/>
   };
-  console.log('App');
+
+  const onOutlookLogin = (user) => {
+    setCurrentOutlookUser(user)
+  };
 
   return (
     <div className="App">
-      <OutlookLogin/>
-      <BoxLogin/>
-      {pages[path]}
+      {/*<BoxLogin/>*/}
+      <OutlookLogin onChange={onOutlookLogin}/>
+      <CurrentUserContext.Provider value={currentOutlookUser}>
+        {pages[path]}
+      </CurrentUserContext.Provider>
     </div>
   );
 }

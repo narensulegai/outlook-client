@@ -1,23 +1,27 @@
 import React, {useState, useEffect} from 'react';
 import {login, logout, getCurrentUser} from "../../lib/outlookApi";
 
-function OutlookLogin() {
+function OutlookLogin(props) {
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
+
+  props.onChange(currentUser);
 
   const onLogin = async () => {
     await login();
-    setCurrentUser(getCurrentUser())
+    const currentUser = getCurrentUser();
+    setCurrentUser(getCurrentUser());
+    props.onChange(currentUser);
   };
 
   const onLogout = async () => {
     await logout();
     setCurrentUser(null);
+    props.onChange(currentUser);
   };
 
   return <div>
     {currentUser !== null
       ? <div>
-        <span>{currentUser.userName}</span>
         <button onClick={onLogout}>Logout Outlook</button>
       </div>
       : <button onClick={onLogin}>Login Outlook</button>}
