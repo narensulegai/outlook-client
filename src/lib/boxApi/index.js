@@ -1,7 +1,7 @@
 const clientId = '3ccc38g555atvo8e2jbzedk1pgtasj04';
 const clientSecret = 'ICOgCh3hc11RzGhXcM94uX68yKNbmY2Y';
 
-const toUrl = (m) => {
+export const toUrl = (m) => {
   const params = [];
   for (let k in m) {
     params.push(`${k}=${m[k]}`);

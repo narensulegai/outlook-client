@@ -4,11 +4,10 @@ import Main from './components/main';
 import BoxLoginCallback from './components/boxLoginCallback';
 import BoxLogin from './components/boxLogin';
 import OutlookLogin from './components/outlookLogin';
-import {getCurrentUser} from "./lib/outlookApi";
 import CurrentUserContext from './context/CurrentUserContext';
 
 function App() {
-  const [currentOutlookUser, setCurrentOutlookUser] = useState('Default user');
+  const [currentOutlookUser, setCurrentOutlookUser] = useState(null);
   //Check if it is a redirect form Box login
   let params = (new URL(document.location)).searchParams;
   let path = "";
