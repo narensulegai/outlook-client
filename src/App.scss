@@ -1,0 +1,35 @@
+.main-layout {
+  display: grid;
+  grid-gap: 0.25em;
+  grid-template-columns: 1fr 8fr;
+  grid-auto-rows: minmax(50px, auto);
+}
+
+button {
+  background: #1783b5;
+  padding: 0.5em 1em;
+  border: none;
+  color: white;
+  border-radius: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.header {
+  padding: 0 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.body {
+  padding: 1em 1em 0 1em;
+}
+
+.small-margin-left {
+  margin-left: 1em;
+}
+
+input[type="text"] {
+  height: 1.5em;
+}

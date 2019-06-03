@@ -19,7 +19,7 @@ function OutlookLogin(props) {
     props.onChange(currentUser);
   };
 
-  return <div>
+  return <React.Fragment>
     {currentUser !== null
       ? <div>
         <button onClick={onLogout}>Logout Outlook</button>
@@ -27,7 +27,7 @@ function OutlookLogin(props) {
       : <button onClick={onLogin}>Login Outlook</button>}
 
 
-  </div>
+  </React.Fragment>
 }
 
 export default OutlookLogin;

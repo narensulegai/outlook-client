@@ -27,3 +27,4 @@ yarn-error.log*
 .idea/outlook-client.iml
 .idea/vcs.xml
 .idea/workspace.xml
+.idea/watcherTasks.xml

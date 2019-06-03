@@ -4,7 +4,8 @@ import {toUrl} from '../boxApi';
 const msalConfig = {
   auth: {
     clientId: "cd83697c-e9dd-4d58-8aad-8d1ae1b475a6",
-    redirectUri: 'https://narensulegai.github.io/outlook-client',
+    // redirectUri: 'https://narensulegai.github.io/outlook-client',
+    redirectUri: 'http://localhost:3001',
   },
   cache: {
     cacheLocation: "localStorage",
@@ -49,18 +50,19 @@ const callApi = async (url, addHeaders = {}) => {
   return res.json();
 };
 
-// https://graph.microsoft.com/v1.0/me/messages?$search="from:shilpa_goswami@mckinsey.com"&$select=subject,from
-// https://graph.microsoft.com/v1.0/me/messages?$filter=from/emailAddress/address eq 'Shilpa_Goswami@mckinsey.com'
+export const getFirstEmailPage = async (groupName) => {
+  const emailEndPoint = 'https://graph.microsoft.com/v1.0/me/messages?'
+    + toUrl({
+      '$search': `"recipients:${groupName}"`,
+      '$select': 'sender,subject,body',
+      '$top': 50,
+      '$count': 'true'
+    });
 
-const emailEndPoint = 'https://graph.microsoft.com/v1.0/me/messages?'
-  + toUrl({
-    '$search': `"recipients:updateideabank"`,
-    '$select': 'sender,subject,body',
-    '$top': 50,
-    '$count': 'true'
-  });
+  return await getEmails(emailEndPoint);
+};
 
-export const getEmails = async (endPoint = emailEndPoint) => {
+export const getEmails = async (endPoint) => {
 
   const res = await callApi(endPoint,
     {'Prefer': 'outlook.body-content-type="text"'});

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import './App.css';
+import './App.scss';
 import Main from './components/main';
 import BoxLoginCallback from './components/boxLoginCallback';
 import BoxLogin from './components/boxLogin';
@@ -24,15 +24,24 @@ function App() {
     setCurrentOutlookUser(user)
   };
 
-  return (
-    <div className="App">
-      {/*<BoxLogin/>*/}
+
+  return <div className={'main-layout'}>
+    <div className={'logo'}/>
+    <div className={'header'}>
+      <div>Outlook Client</div>
       <OutlookLogin onChange={onOutlookLogin}/>
+    </div>
+    <div className={'side-bar'}/>
+    <div className={'body'}>
       <CurrentUserContext.Provider value={currentOutlookUser}>
         {pages[path]}
       </CurrentUserContext.Provider>
     </div>
-  );
+    {/*<BoxLogin/>*/}
+
+
+  </div>
+
 }
 
 export default App;

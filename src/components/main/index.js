@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {getEmails} from "../../lib/outlookApi";
+import {getFirstEmailPage, getEmails} from "../../lib/outlookApi";
 import toCsv from '../../lib/toCsv'
 
 import CurrentUserContext from '../../context/CurrentUserContext';
@@ -7,7 +7,8 @@ import CurrentUserContext from '../../context/CurrentUserContext';
 function Main() {
   const [emailList, setEmailList] = useState([]);
   const [nextPageLink, setNextPageLink] = useState(null);
-
+  const [emailGroupName, setEmailGroupName] = useState('updateideabank');
+  const emailGroupRef = React.createRef();
 
   useEffect(() => {
   }, []);
@@ -15,7 +16,8 @@ function Main() {
   const currentUser = useContext(CurrentUserContext);
 
   const getMails = async () => {
-    const {emails, nextLink} = await getEmails();
+    const mailingGroup = emailGroupRef.current.value;
+    const {emails, nextLink} = await getFirstEmailPage(mailingGroup);
     setNextPageLink(nextLink);
     setEmailList(emails);
   };
@@ -37,17 +39,28 @@ function Main() {
     toCsv('email', list);
   };
 
+  const updateEmailGroupName = () => {
+    setEmailList([]);
+    setEmailGroupName(emailGroupRef.current.value);
+  };
+
   return <div>
 
     {currentUser !== null && <div>
-      Welcome {currentUser.name}
+      <div>Welcome {currentUser.name}</div>
+
       <div>
-        <button onClick={getMails}>
-          Get emails from UpdateIdeaBank mailing group
-        </button>
-        {nextPageLink && <button onClick={nextPage}>Get more</button>}
-        {emailList.length > 0 && <button onClick={download}>Download as CSV</button>}
+        <span>Mailing Group</span>
+        <input className='small-margin-left'
+               type="text"
+               value={emailGroupName}
+               onChange={updateEmailGroupName}
+               ref={emailGroupRef}/>
+        <button className='small-margin-left' onClick={getMails}>Get emails</button>
+        {nextPageLink && <button className='small-margin-left' onClick={nextPage}>Get more</button>}
+        {emailList.length > 0 && <button className='small-margin-left' onClick={download}>Download as CSV</button>}
       </div>
+
       <div>
         {emailList.map((m, i) => {
           return <div key={i}>
@@ -55,6 +68,11 @@ function Main() {
           </div>;
         })}
       </div>
+
+      <div>
+        {emailList.length === 0 && <div>No emails to show</div>}
+      </div>
+
     </div>}
 
   </div>;
