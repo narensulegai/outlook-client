@@ -23,6 +23,7 @@ button {
 }
 
 .body {
+  font-size: small;
   padding: 1em 1em 0 1em;
 }
 
@@ -32,4 +33,9 @@ button {
 
 input[type="text"] {
   height: 1.5em;
+}
+
+.center {
+  text-align: center;
+  margin: auto;
 }

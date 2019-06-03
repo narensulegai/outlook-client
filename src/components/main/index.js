@@ -47,7 +47,7 @@ function Main() {
   return <div>
 
     {currentUser !== null && <div>
-      <div>Welcome {currentUser.name}</div>
+      <div>Welcome {currentUser.name}!</div>
 
       <div>
         <span>Mailing Group</span>
@@ -73,6 +73,10 @@ function Main() {
         {emailList.length === 0 && <div>No emails to show</div>}
       </div>
 
+    </div>}
+
+    {currentUser === null && <div className='center'>
+      Please log in to Outlook
     </div>}
 
   </div>;
