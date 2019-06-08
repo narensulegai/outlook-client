@@ -2,21 +2,14 @@ import React, {useState} from 'react';
 import {login, logout, getCurrentUser} from "../../lib/outlookApi";
 
 function OutlookLogin(props) {
-  const [currentUser, setCurrentUser] = useState(getCurrentUser());
-
-  props.onChange(currentUser);
+  const currentUser = getCurrentUser();
 
   const onLogin = async () => {
     await login();
-    const currentUser = getCurrentUser();
-    setCurrentUser(getCurrentUser());
-    props.onChange(currentUser);
   };
 
   const onLogout = async () => {
     await logout();
-    setCurrentUser(null);
-    props.onChange(currentUser);
   };
 
   return <React.Fragment>

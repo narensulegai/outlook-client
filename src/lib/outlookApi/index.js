@@ -4,7 +4,6 @@ import {toUrl} from '../boxApi';
 const msalConfig = {
   auth: {
     clientId: "cd83697c-e9dd-4d58-8aad-8d1ae1b475a6",
-    redirectUri: 'https://narensulegai.github.io/outlook-client',
   },
   cache: {
     cacheLocation: "localStorage",
@@ -23,13 +22,28 @@ userAgent.handleRedirectCallback(() => {
 
 
 const acquireToken = async () => {
-  const {accessToken} = await userAgent.acquireTokenSilent(requestObj);
-  return accessToken;
+  return await acquireTokenOrRedirect();
 };
 
 export const login = async () => {
-  await userAgent.loginPopup(requestObj);
-  await userAgent.acquireTokenPopup(requestObj);
+  await userAgent.loginRedirect(requestObj);
+};
+
+export const acquireTokenOrRedirect = async () => {
+  try {
+    const {accessToken} = await userAgent.acquireTokenSilent(requestObj);
+    return accessToken;
+  } catch (e) {
+    //ClientAuthError, ServerError
+    if (e.name === 'ServerError') {
+      await userAgent.acquireTokenRedirect(requestObj);
+    } else if (e.name === 'ClientAuthError') {
+      //  user has logged out or is yet to login
+    } else {
+      alert('Your session has expired, you are being logged out. \nPlease login again.');
+      await logout();
+    }
+  }
 };
 
 export const getCurrentUser = () => {
@@ -43,10 +57,15 @@ export const logout = () => {
 
 const callApi = async (url, addHeaders = {}) => {
   const accessToken = await acquireToken();
-  const res = await fetch(url, {
-    headers: {...addHeaders, 'Authorization': 'Bearer ' + accessToken}
-  });
-  return res.json();
+  if (accessToken) {
+    const res = await fetch(url, {
+      headers: {...addHeaders, 'Authorization': 'Bearer ' + accessToken}
+    });
+    return res.json();
+  } else {
+    throw new Error('Unable to get access token');
+  }
+
 };
 
 export const getFirstEmailPage = async (groupName) => {

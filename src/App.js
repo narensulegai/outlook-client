@@ -2,12 +2,12 @@ import React, {useState, useEffect} from 'react';
 import './App.scss';
 import Main from './components/main';
 import BoxLoginCallback from './components/boxLoginCallback';
-import BoxLogin from './components/boxLogin';
+import * as outlookApi from './lib/outlookApi';
 import OutlookLogin from './components/outlookLogin';
 import CurrentUserContext from './context/CurrentUserContext';
 
 function App() {
-  const [currentOutlookUser, setCurrentOutlookUser] = useState(null);
+  const [currentOutlookUser, setCurrentOutlookUser] = useState(outlookApi.getCurrentUser());
   //Check if it is a redirect form Box login
   let params = (new URL(document.location)).searchParams;
   let path = "";
@@ -20,7 +20,11 @@ function App() {
     "boxLoginCallback": <BoxLoginCallback/>
   };
 
-  const onOutlookLogin = (user) => {
+  if (currentOutlookUser) {
+    outlookApi.acquireTokenOrRedirect();
+  }
+
+  const handleOutlookLoginChange = (user) => {
     setCurrentOutlookUser(user)
   };
 
@@ -29,7 +33,7 @@ function App() {
     <div className={'logo'}/>
     <div className={'header'}>
       <div>Outlook Client</div>
-      <OutlookLogin onChange={onOutlookLogin}/>
+      <OutlookLogin onChange={handleOutlookLoginChange}/>
     </div>
     <div className={'side-bar'}/>
     <div className={'body'}>
