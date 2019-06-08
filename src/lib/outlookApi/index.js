@@ -4,7 +4,7 @@ import {toUrl} from '../boxApi';
 const msalConfig = {
   auth: {
     clientId: "cd83697c-e9dd-4d58-8aad-8d1ae1b475a6",
-    redirectUri: 'http://narensulegai.github.io/outlook-client'
+    redirectUri: 'https://narensulegai.github.io/outlook-client'
   },
   cache: {
     cacheLocation: "localStorage",
