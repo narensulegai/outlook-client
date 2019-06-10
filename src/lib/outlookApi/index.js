@@ -124,6 +124,14 @@ export const moveEmailsToFolder = async (folderName, ids) => {
 
 };
 
+export const autoReplyToSender = async (message, ids) => {
+  await ids.map(async (id) => {
+    await callApi(`/me/messages/${id}/reply`, 'POST', {}, {
+      "comment": message
+    });
+  })
+};
+
 export const applyCategoryToEmails = async (categoryName, ids) => {
 
   await createCategoryIfNotExists(categoryName);

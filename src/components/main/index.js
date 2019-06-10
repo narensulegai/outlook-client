@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {getFirstEmailPage, getEmails, moveEmailsToFolder} from "../../lib/outlookApi";
+import {getFirstEmailPage, getEmails, moveEmailsToFolder, autoReplyToSender} from "../../lib/outlookApi";
 import toCsv from '../../lib/toCsv'
 
 import CurrentUserContext from '../../context/CurrentUserContext';
@@ -11,6 +11,7 @@ function Main() {
   const [mailboxName, setMailboxName] = useState('ideabank');
   const emailGroupRef = React.createRef();
   const mailboxNameRef = React.createRef();
+  const autoReplyCheckbox = React.createRef();
 
   useEffect(() => {
   }, []);
@@ -43,7 +44,11 @@ function Main() {
   };
 
   const moveToMailbox = async () => {
-    await moveEmailsToFolder(mailboxName, emailList.map(m => m.id));
+    const emailIds = emailList.map(m => m.id);
+    if (autoReplyCheckbox.current.value === 'on') {
+      await autoReplyToSender('Thank you for your contribution to IdeaBank', emailIds);
+    }
+    await moveEmailsToFolder(mailboxName, emailIds);
     await getMails();
     alert(`Moved ${emailList.length} mail(s) to ${mailboxName}`);
   };
@@ -78,6 +83,8 @@ function Main() {
                  value={mailboxName}
                  onChange={handleMailboxNameChange}
                  ref={mailboxNameRef}/>
+          <span className='small-margin-left'>Auto reply</span>
+          <input type="checkbox" ref={autoReplyCheckbox}/>
           <button title={`Move all emails to folder ${mailboxName}`}
                   className='small-margin-left' onClick={moveToMailbox}>
             Move
