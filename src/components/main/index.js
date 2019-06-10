@@ -72,12 +72,13 @@ function Main() {
         {emailList.length > 0 &&
         <React.Fragment>
           <button className='small-margin-left' onClick={download}>Download all as CSV</button>
+          <span className='small-margin-left'>Category name</span>
           <input type="text"
                  className='small-margin-left'
                  value={categoryName}
                  onChange={handleCategoryNameChange}
                  ref={categoryNameRef}/>
-          <button className='small-margin-left' onClick={markAllWithCategory}>Mark all with category</button>
+          <button className='small-margin-left' onClick={markAllWithCategory}>Mark all</button>
           <span>*Category names are case insensitive</span>
         </React.Fragment>}
       </div>

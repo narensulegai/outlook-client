@@ -45,7 +45,9 @@
         "lines": 30
       }
     },
-    "coverageReporters": ["text"]
+    "coverageReporters": [
+      "text"
+    ]
   },
   "homepage": "https://narensulegai.github.io/outlook-client",
   "devDependencies": {
