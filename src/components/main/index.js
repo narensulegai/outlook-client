@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {getFirstEmailPage, getEmails, applyCategoryToEmails} from "../../lib/outlookApi";
+import {getFirstEmailPage, getEmails, moveEmailsToFolder} from "../../lib/outlookApi";
 import toCsv from '../../lib/toCsv'
 
 import CurrentUserContext from '../../context/CurrentUserContext';
@@ -8,9 +8,9 @@ function Main() {
   const [emailList, setEmailList] = useState([]);
   const [nextPageLink, setNextPageLink] = useState(null);
   const [emailGroupName, setEmailGroupName] = useState('updateideabank');
-  const [categoryName, setCategoryName] = useState('ideabank');
+  const [mailboxName, setMailboxName] = useState('ideabank');
   const emailGroupRef = React.createRef();
-  const categoryNameRef = React.createRef();
+  const mailboxNameRef = React.createRef();
 
   useEffect(() => {
   }, []);
@@ -31,21 +31,21 @@ function Main() {
   };
 
   const download = async () => {
-    // await applyCategoryToEmails(categoryName, emailList.map(m => m.id));
     const list = emailList.map(e => {
-      const categories = e.categories.join(',');
       const senderName = e.sender.emailAddress.name;
       const senderEmail = e.sender.emailAddress.address;
-      return [categories, senderName, senderEmail, e.subject, e.body.content];
+      return [senderName, senderEmail, e.subject, e.body.content];
     });
 
 
-    list.unshift(['Categories', 'Sender Name', 'Sender Email', 'Subject', 'Content']);
+    list.unshift(['Sender Name', 'Sender Email', 'Subject', 'Content']);
     toCsv('email', list);
   };
 
-  const markAllWithCategory = async () => {
-    await applyCategoryToEmails(categoryName, emailList.map(m => m.id));
+  const moveToMailbox = async () => {
+    await moveEmailsToFolder(mailboxName, emailList.map(m => m.id));
+    await getMails();
+    alert(`Moved ${emailList.length} mail(s) to ${mailboxName}`);
   };
 
   const updateEmailGroupName = () => {
@@ -53,8 +53,8 @@ function Main() {
     setEmailGroupName(emailGroupRef.current.value);
   };
 
-  const handleCategoryNameChange = () => {
-    setCategoryName(categoryNameRef.current.value);
+  const handleMailboxNameChange = () => {
+    setMailboxName(mailboxNameRef.current.value);
   };
   return <div>
 
@@ -71,15 +71,18 @@ function Main() {
         {nextPageLink && <button className='small-margin-left' onClick={nextPage}>Get more</button>}
         {emailList.length > 0 &&
         <React.Fragment>
-          <button className='small-margin-left' onClick={download}>Download all as CSV</button>
-          <span className='small-margin-left'>Category name</span>
+          <button className='small-margin-left' title={'Download emails as CSV'} onClick={download}>Download</button>
+          <span className='small-margin-left'>Move all to mailbox</span>
           <input type="text"
                  className='small-margin-left'
-                 value={categoryName}
-                 onChange={handleCategoryNameChange}
-                 ref={categoryNameRef}/>
-          <button className='small-margin-left' onClick={markAllWithCategory}>Mark all</button>
-          <span>*Category names are case insensitive</span>
+                 value={mailboxName}
+                 onChange={handleMailboxNameChange}
+                 ref={mailboxNameRef}/>
+          <button title={`Move all emails to folder ${mailboxName}`}
+                  className='small-margin-left' onClick={moveToMailbox}>
+            Move
+          </button>
+          <span className='small-margin-left'>*Mailbox names are case insensitive</span>
         </React.Fragment>}
       </div>
 
@@ -88,14 +91,12 @@ function Main() {
       <table>
         <thead>
         <tr>
-          <th>Category</th>
           <th>Subject</th>
         </tr>
         </thead>
         <tbody>
         {emailList.map((m, i) => {
           return <tr key={i}>
-            <td>{m.categories.join(',')}</td>
             <td>{m.subject}</td>
           </tr>;
         })}

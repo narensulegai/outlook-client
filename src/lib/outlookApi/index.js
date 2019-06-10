@@ -75,7 +75,7 @@ const callApi = async (path, method = 'GET', addHeaders = {}, body = null) => {
 
 };
 export const getFirstEmailPage = async (groupName) => {
-  const emailEndPoint = '/me/messages?'
+  const emailEndPoint = '/me/mailFolders/inbox/messages?'
     + toUrl({
       '$search': `"recipients:${groupName}"`,
       '$select': 'sender,subject,body,categories',
@@ -98,24 +98,27 @@ export const createCategoryIfNotExists = async (categoryName) => {
 
 };
 
-export const createFolderIfNotExists = async (floderName) => {
+export const createFolderIfNotExists = async (folderName) => {
   const res = await callApi('/me/mailFolders');
-  if (res.value.filter(c => (c.displayName + '').toUpperCase() === (floderName + '').toUpperCase()).length === 0) {
-    alert(`Folder name ${floderName} does not exist we will create one.`);
-    await callApi('/me/mailFolders', 'POST', {}, {
-      displayName: floderName
-    })
+  const folderEle = res.value.filter(c => (c.displayName + '').toUpperCase() === (folderName + '').toUpperCase());
+  if (folderEle.length === 0) {
+    alert(`Folder name ${folderName} does not exist we will create one.`);
+    const newRes = await callApi('/me/mailFolders', 'POST', {}, {
+      displayName: folderName
+    });
+    return newRes.id;
   }
-
+  return folderEle[0].id;
 };
 
 export const moveEmailsToFolder = async (folderName, ids) => {
 
-  await createFolderIfNotExists(folderName);
-  //https://github.com/microsoftgraph/microsoft-graph-docs/issues/2268
+  const folderId = await createFolderIfNotExists(folderName);
+
+  // https://github.com/microsoftgraph/microsoft-graph-docs/issues/2268
   await ids.map(async (id) => {
-    await callApi(`/me/messages/${id}/copy`, 'POST', {}, {
-      "destinationId": folderName
+    await callApi(`/me/messages/${id}/move`, 'POST', {}, {
+      "destinationId": folderId
     });
   })
 
