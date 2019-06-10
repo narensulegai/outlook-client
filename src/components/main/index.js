@@ -46,7 +46,7 @@ function Main() {
   const moveToMailbox = async () => {
     const emailIds = emailList.map(m => m.id);
     if (autoReplyCheckbox.current.value === 'on') {
-      await autoReplyToSender('Thank you for your contribution to IdeaBank', emailIds);
+      // await autoReplyToSender('Thank you for your contribution to IdeaBank', emailIds);
     }
     await moveEmailsToFolder(mailboxName, emailIds);
     await getMails();
