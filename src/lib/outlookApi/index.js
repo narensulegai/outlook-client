@@ -3,8 +3,7 @@ import {toUrl} from '../boxApi';
 
 const msalConfig = {
   auth: {
-    clientId: "cd83697c-e9dd-4d58-8aad-8d1ae1b475a6",
-    redirectUri: 'https://narensulegai.github.io/outlook-client'
+    clientId: "cd83697c-e9dd-4d58-8aad-8d1ae1b475a6"
   },
   cache: {
     cacheLocation: "localStorage",
@@ -13,7 +12,7 @@ const msalConfig = {
 };
 
 const requestObj = {
-  scopes: ["user.read"]
+  scopes: ["Mail.ReadWrite", "MailboxSettings.ReadWrite"]
 };
 
 const userAgent = new UserAgentApplication(msalConfig);
@@ -55,25 +54,31 @@ export const logout = () => {
   return userAgent.logout();
 };
 
+const graphBaseUrl = 'https://graph.microsoft.com/v1.0';
 
-const callApi = async (url, addHeaders = {}) => {
+const callApi = async (path, method = 'GET', addHeaders = {}, body = null) => {
   const accessToken = await acquireToken();
   if (accessToken) {
-    const res = await fetch(url, {
-      headers: {...addHeaders, 'Authorization': 'Bearer ' + accessToken}
-    });
+
+    let req = {
+      headers: {'Content-Type': 'application/json', ...addHeaders, 'Authorization': 'Bearer ' + accessToken},
+      method,
+    };
+    if (body) {
+      req.body = JSON.stringify(body);
+    }
+    const res = await fetch(graphBaseUrl + path, req);
     return res.json();
   } else {
-    throw new Error('Unable to get access token');
+    throw new Error('Unable to get access token.');
   }
 
 };
-
 export const getFirstEmailPage = async (groupName) => {
-  const emailEndPoint = 'https://graph.microsoft.com/v1.0/me/messages?'
+  const emailEndPoint = '/me/messages?'
     + toUrl({
       '$search': `"recipients:${groupName}"`,
-      '$select': 'sender,subject,body',
+      '$select': 'sender,subject,body,categories',
       '$top': 50,
       '$count': 'true'
     });
@@ -81,9 +86,56 @@ export const getFirstEmailPage = async (groupName) => {
   return await getEmails(emailEndPoint);
 };
 
+export const createCategoryIfNotExists = async (categoryName) => {
+  const res = await callApi('/me/outlook/masterCategories');
+  if (res.value.filter(c => (c.displayName + '').toUpperCase() === (categoryName + '').toUpperCase()).length === 0) {
+    alert(`Category name ${categoryName} does not exist we will create one.`);
+    await callApi('/me/outlook/masterCategories', 'POST', {}, {
+      displayName: categoryName,
+      color: "preset9"
+    })
+  }
+
+};
+
+export const createFolderIfNotExists = async (floderName) => {
+  const res = await callApi('/me/mailFolders');
+  if (res.value.filter(c => (c.displayName + '').toUpperCase() === (floderName + '').toUpperCase()).length === 0) {
+    alert(`Folder name ${floderName} does not exist we will create one.`);
+    await callApi('/me/mailFolders', 'POST', {}, {
+      displayName: floderName
+    })
+  }
+
+};
+
+export const moveEmailsToFolder = async (folderName, ids) => {
+
+  await createFolderIfNotExists(folderName);
+  //https://github.com/microsoftgraph/microsoft-graph-docs/issues/2268
+  await ids.map(async (id) => {
+    await callApi(`/me/messages/${id}/copy`, 'POST', {}, {
+      "destinationId": folderName
+    });
+  })
+
+};
+
+export const applyCategoryToEmails = async (categoryName, ids) => {
+
+  await createCategoryIfNotExists(categoryName);
+
+  await ids.map(async (id) => {
+    await callApi(`/me/messages/${id}`, 'PATCH', {}, {
+      categories: [categoryName]
+    });
+  })
+
+};
+
 export const getEmails = async (endPoint) => {
 
-  const res = await callApi(endPoint,
+  const res = await callApi(endPoint, 'GET',
     {'Prefer': 'outlook.body-content-type="text"'});
   return {
     nextLink: res['@odata.nextLink'],
