@@ -9,9 +9,9 @@ function Main() {
   const [nextPageLink, setNextPageLink] = useState(null);
   const [emailGroupName, setEmailGroupName] = useState('updateideabank');
   const [mailboxName, setMailboxName] = useState('ideabank');
+  const [autoReply, setAutoReply] = useState(true);
   const emailGroupRef = React.createRef();
   const mailboxNameRef = React.createRef();
-  const autoReplyCheckbox = React.createRef();
 
   useEffect(() => {
   }, []);
@@ -38,19 +38,19 @@ function Main() {
       return [senderName, senderEmail, e.subject, e.body.content];
     });
 
-
     list.unshift(['Sender Name', 'Sender Email', 'Subject', 'Content']);
-    toCsv('email', list);
+
+    toCsv('Outlook emails ' + new Date().toDateString(), list);
   };
 
   const moveToMailbox = async () => {
     const emailIds = emailList.map(m => m.id);
-    if (autoReplyCheckbox.current.value === 'on') {
-      // await autoReplyToSender('Thank you for your contribution to IdeaBank', emailIds);
+    if (autoReply) {
+      await autoReplyToSender('Thank you for your contribution to IdeaBank', emailIds);
     }
-    await moveEmailsToFolder(mailboxName, emailIds);
-    await getMails();
-    alert(`Moved ${emailList.length} mail(s) to ${mailboxName}`);
+    // await moveEmailsToFolder(mailboxName, emailIds);
+    // await getMails();
+    // alert(`Moved ${emailList.length} mail(s) to ${mailboxName}`);
   };
 
   const updateEmailGroupName = () => {
@@ -61,6 +61,11 @@ function Main() {
   const handleMailboxNameChange = () => {
     setMailboxName(mailboxNameRef.current.value);
   };
+
+  const handleAutoReplyChange = () => {
+    setAutoReply(!autoReply);
+  };
+
   return <div>
 
     {currentUser !== null && <div>
@@ -84,7 +89,7 @@ function Main() {
                  onChange={handleMailboxNameChange}
                  ref={mailboxNameRef}/>
           <span className='small-margin-left'>Auto reply</span>
-          <input type="checkbox" ref={autoReplyCheckbox}/>
+          <input type="checkbox" onChange={handleAutoReplyChange} checked={autoReply}/>
           <button title={`Move all emails to folder ${mailboxName}`}
                   className='small-margin-left' onClick={moveToMailbox}>
             Move

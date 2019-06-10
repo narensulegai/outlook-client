@@ -69,7 +69,14 @@ const callApi = async (path, method = 'GET', addHeaders = {}, body = null) => {
       req.body = JSON.stringify(body);
     }
     const res = await fetch(graphBaseUrl + path, req);
-    return res.json();
+
+    try {
+      // Check if response is empty
+      const json = await res.json();
+      return json
+    } catch (e) {
+      return ''
+    }
   } else {
     throw new Error('Unable to get access token.');
   }
